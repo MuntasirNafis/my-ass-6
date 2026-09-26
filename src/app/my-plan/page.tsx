@@ -1,113 +1,156 @@
 "use client";
 
 import { usePlan } from "@/context/PlanContext";
-import Image from "next/image";
 import Link from "next/link";
-import { Check, Trash2, Flame, Clock, Trophy } from "lucide-react";
+import Image from "next/image";
+import { Trash2, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 
-export default function MyPlan() {
-  const { todayPlan, removeFromPlan, toggleMarkAsDone } = usePlan();
+export default function MyPlanPage() {
+  const { todayPlan, toggleMarkAsDone, removeFromPlan } = usePlan();
+  const [activeTab, setActiveTab] = useState<"today" | "saved">("today");
+  const [sortBy, setSortBy] = useState<"duration" | "calories">("duration");
 
-  const totalCalories = todayPlan.reduce((acc, item) => acc + item.caloriesBurned, 0);
-  const totalDuration = todayPlan.reduce((acc, item) => acc + item.duration, 0);
   const completedCount = todayPlan.filter((item) => item.isDone).length;
+  const totalMinutes = todayPlan.reduce((acc, item) => acc + item.duration, 0);
+  const totalCalories = todayPlan.reduce((acc, item) => acc + item.caloriesBurned, 0);
+
+  const sortedPlan = [...todayPlan].sort((a, b) => {
+    if (sortBy === "duration") return b.duration - a.duration;
+    return b.caloriesBurned - a.caloriesBurned;
+  });
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-slate-800 pb-6">
-        <div>
-          <h1 className="text-3xl font-bold uppercase text-white tracking-tight">
-            TODAY'S WORKOUT PLAN
-          </h1>
-          <p className="text-slate-400 text-xs mt-1">
-            Track your routines, check off completed lifts, and hit your target.
-          </p>
-        </div>
+    <div className="max-w-5xl mx-auto py-4">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-extrabold uppercase text-white tracking-wide">
+          MY PLAN
+        </h1>
+        <p className="text-sm text-slate-400 mt-1">
+          Cap of five lifts for today. Finish them, then load more.
+        </p>
+      </div>
 
-        {/* Dynamic Metric Summaries */}
-        <div className="flex items-center gap-4 text-xs font-mono">
-          <div className="bg-[#18181b] border border-slate-800 px-3 py-2 rounded-lg">
-            <span className="text-slate-500 uppercase block text-[9px]">Lifts</span>
-            <span className="text-white font-bold">{completedCount}/{todayPlan.length} Done</span>
-          </div>
-          <div className="bg-[#18181b] border border-slate-800 px-3 py-2 rounded-lg">
-            <span className="text-slate-500 uppercase block text-[9px]">Est. Burn</span>
-            <span className="text-orange-400 font-bold flex items-center gap-1">
-              <Flame className="w-3 h-3" /> {totalCalories} kcal
-            </span>
-          </div>
-          <div className="bg-[#18181b] border border-slate-800 px-3 py-2 rounded-lg">
-            <span className="text-slate-500 uppercase block text-[9px]">Est. Time</span>
-            <span className="text-white font-bold flex items-center gap-1">
-              <Clock className="w-3 h-3 text-slate-400" /> {totalDuration} m
-            </span>
-          </div>
+      {/* Stats Summary Box */}
+      <div className="bg-[#181d28] border border-slate-800 rounded-xl p-5 mb-8 grid grid-cols-3 gap-4 text-left">
+        <div>
+          <p className="text-xs text-slate-400 font-medium mb-1">Exercises</p>
+          <p className="text-2xl font-bold text-white">{completedCount} / {todayPlan.length}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400 font-medium mb-1">Minutes</p>
+          <p className="text-2xl font-bold text-white">{totalMinutes}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400 font-medium mb-1">Calories</p>
+          <p className="text-2xl font-bold text-white">{totalCalories}</p>
         </div>
       </div>
 
+      {/* Filter Tabs & Sort Dropdown */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-2 bg-[#181d28] p-1 rounded-lg border border-slate-800">
+          <button
+            onClick={() => setActiveTab("today")}
+            className={`px-4 py-1.5 rounded-md text-xs font-semibold transition ${
+              activeTab === "today"
+                ? "bg-slate-700 text-white"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Today's Plan
+          </button>
+          <button
+            onClick={() => setActiveTab("saved")}
+            className={`px-4 py-1.5 rounded-md text-xs font-semibold transition ${
+              activeTab === "saved"
+                ? "bg-slate-700 text-white"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Saved
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-slate-400 font-medium">Sort By</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as "duration" | "calories")}
+            className="bg-[#181d28] border border-slate-800 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-slate-600"
+          >
+            <option value="duration">Duration</option>
+            <option value="calories">Calories</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Content List / Empty State */}
       {todayPlan.length === 0 ? (
-        <div className="bg-[#18181b] border border-dashed border-slate-800 rounded-2xl p-12 text-center space-y-4">
-          <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center mx-auto text-[#ccff00]">
-            <Trophy className="w-6 h-6" />
-          </div>
-          <h3 className="text-lg font-bold text-white uppercase">Your plan is empty</h3>
-          <p className="text-slate-400 text-xs max-w-sm mx-auto">
-            Go back to the workout library and select up to 5 lifts for today's session.
+        <div className="bg-[#181d28] border border-slate-800/80 rounded-xl p-12 text-center flex flex-col items-center justify-center min-h-[250px]">
+          <h3 className="text-lg font-bold uppercase tracking-wider text-white mb-2">
+            NOTHING HERE YET
+          </h3>
+          <p className="text-xs text-slate-400 mb-6">
+            Browse the library and add a lift to get today moving.
           </p>
           <Link
             href="/"
-            className="inline-block bg-[#ccff00] text-slate-950 font-bold px-6 py-2.5 rounded text-xs uppercase hover:bg-opacity-90 transition"
+            className="bg-lime-400 hover:bg-lime-500 text-black font-semibold text-xs px-5 py-2.5 rounded-lg transition uppercase"
           >
-            BROWSE WORKOUTS
+            Go to workouts
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
-          {todayPlan.map((item) => (
+        <div className="space-y-3">
+          {sortedPlan.map((item) => (
             <div
               key={item.id}
-              className={`bg-[#18181b] border rounded-xl p-4 flex items-center justify-between gap-4 transition ${
+              className={`flex items-center justify-between p-4 rounded-xl border transition ${
                 item.isDone
-                  ? "border-[#ccff00]/40 opacity-60 bg-slate-950/50"
-                  : "border-slate-800 hover:border-slate-700"
+                  ? "bg-[#131720] border-slate-800/60 opacity-60"
+                  : "bg-[#181d28] border-slate-800"
               }`}
             >
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => toggleMarkAsDone(item.id)}
-                  className={`w-6 h-6 rounded-md border flex items-center justify-center transition ${
+                  className={`p-1.5 rounded-full transition ${
                     item.isDone
-                      ? "bg-[#ccff00] border-[#ccff00] text-slate-950"
-                      : "border-slate-700 hover:border-[#ccff00]"
+                      ? "text-lime-400 bg-lime-400/10"
+                      : "text-slate-500 hover:text-slate-300"
                   }`}
                 >
-                  {item.isDone && <Check className="w-4 h-4 stroke-[3]" />}
+                  <CheckCircle2 className="w-6 h-6" />
                 </button>
-
-                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-900 shrink-0">
-                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-800 flex-shrink-0">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-
                 <div>
-                  <h3
-                    className={`font-bold text-sm uppercase ${
-                      item.isDone ? "line-through text-slate-400" : "text-white"
+                  <h4
+                    className={`font-bold text-sm text-white ${
+                      item.isDone ? "line-through text-slate-400" : ""
                     }`}
                   >
                     {item.name}
-                  </h3>
-                  <p className="text-xs text-slate-400 font-mono mt-0.5">
-                    {item.sets} Sets × {item.reps} | {item.duration} min | {item.caloriesBurned} kcal
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    {item.duration} min • {item.caloriesBurned} kcal
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={() => removeFromPlan(item.id)}
-                className="text-slate-500 hover:text-red-400 transition p-2"
-                title="Remove lift"
+                className="text-slate-500 hover:text-red-400 p-2 transition"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-5 h-5" />
               </button>
             </div>
           ))}
