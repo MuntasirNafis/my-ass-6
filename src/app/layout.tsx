@@ -8,24 +8,22 @@ import { PlanProvider } from "@/context/PlanContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FitLog - Train With Intent",
-  description: "Track your daily gym workouts and plan your routines.",
+  title: "FitLog — Workout Library",
+  description: "A dark, no-nonsense gym companion app",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-[#121212] text-slate-100 min-h-screen flex flex-col justify-between`}>
+      <body className={`${inter.className} bg-[#121214] text-white min-h-screen flex flex-col justify-between`}>
         <PlanProvider>
           <div>
             <Navbar />
-            <main className="max-w-6xl mx-auto px-6 py-8 flex-1 w-full">
-              {children}
-            </main>
+            <main>{children}</main>
           </div>
           <Footer />
         </PlanProvider>

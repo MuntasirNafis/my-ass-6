@@ -1,51 +1,67 @@
+"tsx"
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { usePlan } from "../context/PlanContext";
+import { usePlan } from "@/context/PlanContext";
+import { Dumbbell } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { todayPlan, savedList } = usePlan();
+  const { planWorkouts, savedWorkouts } = usePlan();
 
   return (
-    <header className="bg-[#121212] text-white border-b border-slate-800 sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo using local logo.png */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-wider text-white">
-          <Image src="/logo.png" alt="FitLog Logo" width={28} height={28} priority />
-          <span>FITLOG</span>
+    <header className="bg-[#121214] border-b border-gray-800 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        {/* Left Logo */}
+        <Link href="/" className="flex items-center gap-2 text-white font-extrabold tracking-wider text-xl">
+          <div className="bg-[#ccff00] p-1.5 rounded text-black">
+            <Dumbbell className="w-5 h-5" />
+          </div>
+          FITLOG
         </Link>
 
-        {/* Navigation Tabs */}
-        <div className="bg-slate-900/80 p-1 rounded-full border border-slate-800 flex items-center text-xs font-medium">
+        {/* Middle Links */}
+        <nav className="hidden md:flex items-center space-x-8">
           <Link
             href="/"
-            className={`px-4 py-1.5 rounded-full transition ${
-              pathname === "/" ? "bg-[#ccff00] text-slate-950 font-semibold" : "text-slate-400 hover:text-white"
+            className={`text-sm font-medium transition ${
+              pathname === "/" ? "text-[#ccff00] font-bold" : "text-gray-400 hover:text-white"
             }`}
           >
             Workouts
           </Link>
           <Link
             href="/my-plan"
-            className={`px-4 py-1.5 rounded-full transition ${
-              pathname === "/my-plan" ? "bg-[#ccff00] text-slate-950 font-semibold" : "text-slate-400 hover:text-white"
+            className={`text-sm font-medium transition ${
+              pathname === "/my-plan" ? "text-[#ccff00] font-bold" : "text-gray-400 hover:text-white"
             }`}
           >
             My Plan
           </Link>
-        </div>
+        </nav>
 
-        {/* Badges */}
-        <div className="flex items-center gap-3 text-xs font-mono">
-          <span className="text-slate-400">
-            Plan <span className="bg-[#ccff00] text-slate-950 px-1.5 py-0.5 rounded font-bold">{todayPlan.length}</span>
-          </span>
-          <span className="text-slate-400">
-            Saved <span className="bg-slate-800 text-white px-1.5 py-0.5 rounded font-bold">{savedList.length}</span>
-          </span>
+        {/* Right Status Badges */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/my-plan"
+            className="flex items-center gap-1.5 bg-[#ccff00] text-black text-xs font-bold px-3 py-1.5 rounded-full"
+          >
+            <span>Plan</span>
+            <span className="bg-black text-[#ccff00] w-5 h-5 rounded-full flex items-center justify-center text-[10px]">
+              {planWorkouts.length}
+            </span>
+          </Link>
+
+          <Link
+            href="/my-plan"
+            className="flex items-center gap-1.5 border border-gray-700 text-white text-xs font-medium px-3 py-1.5 rounded-full hover:border-gray-500"
+          >
+            <span>Saved</span>
+            <span className="bg-gray-800 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px]">
+              {savedWorkouts.length}
+            </span>
+          </Link>
         </div>
       </div>
     </header>
