@@ -55,10 +55,11 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
       showToast("Plan is full! Maximum 5 lifts allowed for today.");
       return;
     }
-    if (planWorkouts.some((item) => item.id === workout.id)) {
+    if (planWorkouts.some((item) => String(item.id) === String(workout.id))) {
       showToast("Already in today's plan!");
       return;
     }
+
     const updated = [...planWorkouts, workout];
     setPlanWorkouts(updated);
     localStorage.setItem("fitlog_plan", JSON.stringify(updated));

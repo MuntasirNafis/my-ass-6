@@ -78,7 +78,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Sort Dropdown */}
+          {/* Sort Dropdown (C1 Requirement) */}
           <div className="flex items-center gap-2 bg-[#18181b] border border-gray-800 px-3 py-2 rounded-lg">
             <span className="text-xs text-gray-400">Sort By:</span>
             <select
